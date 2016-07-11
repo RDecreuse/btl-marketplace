@@ -1,0 +1,138 @@
+= Shop RESTful API Guide
+Shop team;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[[overview]]
+= Overview
+
+[[overview-http-verbs]]
+== HTTP verbs
+
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource
+
+| `PUT`
+| Used to update an existing resource
+
+| `DELETE`
+| Used to delete an existing resource
+|===
+
+[[overview-http-status-codes]]
+== HTTP status codes
+
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| The request completed successfully
+
+| `201 Created`
+| A new resource has been created successfully. The resource's URI is available from the response's
+`Location` header
+
+| `204 No Content`
+| An update to an existing resource has been applied successfully
+
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
+
+| `401 Unauthorized`
+| Error code response for missing or invalid authentication token
+
+| `403 Forbidden`
+| Error code response for not granted access
+
+| `404 Not Found`
+| The requested resource did not exist
+
+| `405 Method Not Allowed`
+| The request HTTP method is not allowed
+
+| `500 Internal Server Error`
+| The server encountered an unexpected condition which prevented it from fulfilling the request.
+|===
+
+[[overview-errors]]
+== Errors
+
+=== Application Error
+Whenever an error response (status code >= 400) is returned, the body will contain a JSON object
+that describes the problem. The error object has the following structure:
+
+include::{snippets}/error/response-fields.adoc[]
+
+=== Validation Error
+You may receive a validation error when you create a resource (for example with a mail too long when creating a new user). The response is :
+
+include::{snippets}/validation-error/http-response.adoc[]
+
+With fields :
+
+include::{snippets}/validation-error/response-fields.adoc[]
+
+[[overview-hypermedia]]
+== Hypermedia
+
+RESTful Notes uses hypermedia and resources include links to other resources in their
+responses. Responses are in http://stateless.co/hal_specification.html[Hypertext Application
+from resource to resource.
+Language (HAL)] format. Links can be found beneath the `_links` key. Users of the API should
+not create URIs themselves, instead they should use the above-described links to navigate
+
+[[resources]]
+= Resources
+
+[[user]]
+== User
+
+=== Accessing a user
+
+include::{snippets}/user-find-one/path-param-custom.adoc[]
+
+The response contains a user :
+include::{snippets}/user-find-one/response-fields.adoc[]
+
+=== Accessing user list
+
+include::{snippets}/user-find/http-request.adoc[]
+
+The response contains a user list :
+
+include::{snippets}/user-find/response-fields.adoc[]
+
+[[farm-create]]
+=== Create a user
+
+include::{snippets}/user-create/http-request.adoc[]
+
+Request fields :
+include::{snippets}/user-create/request-fields.adoc[]
+
+The response http code must be 201 Created. (see <<overview-http-status-codes>>)
+
+[[user-plugin]]
+=== Get user's plugins
+
+include::{snippets}/user-plugins/http-request.adoc[]
+
+The response contains the list of plugins that the user is granted for:
+
+include::{snippets}/user-plugins/response-fields.adoc[]

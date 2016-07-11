@@ -12,6 +12,8 @@ public class DefaultViewConfiguration extends WebMvcConfigurerAdapter {
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/swagger").setViewName("forward:/swagger/index.html");
         registry.addViewController("/swagger/").setViewName("forward:/swagger/index.html");
+        registry.addViewController("/doc").setViewName("forward:/doc/index.html");
+        registry.addViewController("/doc/").setViewName("forward:/doc/index.html");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
         super.addViewControllers(registry);
     }

@@ -22,6 +22,7 @@
 		<java.version>1.8</java.version>
         <lombok.version>1.16.6</lombok.version>
         <hibernate.version>5.1.0.Final</hibernate.version>
+        <snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
     </properties>
 
 	<dependencies>
@@ -85,6 +86,18 @@
 			<artifactId>swagger-jaxrs_2.10</artifactId>
             <version>LATEST</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.restdocs</groupId>
+            <artifactId>spring-restdocs-core</artifactId>
+            <version>1.1.0.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.restdocs</groupId>
+            <artifactId>spring-restdocs-mockmvc</artifactId>
+            <version>1.1.0.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 	
 	<build>
@@ -93,6 +106,48 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>1.5.2</version>
+                <executions>
+                    <execution>
+                        <id>generate-docs</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>html</backend>
+                            <doctype>book</doctype>
+                            <attributes>
+                                <snippets>${snippetsDirectory}</snippets>
+                                <stylesheet>asciidoctor.css</stylesheet>
+                            </attributes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-docs</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <tasks>
+                                <copy file="target/generated-docs/docbtl-api-doc.html"
+                                      tofile="target/classes/public/doc/index.html"/>
+                                <copy file="target/generated-docs/asciidoctor.css"
+                                      tofile="target/classes/public/doc/asciidoctor.css"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 	
