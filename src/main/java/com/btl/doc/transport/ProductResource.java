@@ -2,9 +2,11 @@ package com.btl.doc.transport;
 
 import com.btl.doc.business.Product;
 import com.btl.doc.service.ProductService;
+import com.wordnik.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.Path;
 import java.util.List;
 
 
@@ -26,17 +28,17 @@ public class ProductResource {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    Product create(@RequestBody Product product){
+    Product create(@RequestBody Product product) {
         return service.create(product);
     }
 
     @RequestMapping(path = "/{productId}", method = RequestMethod.PUT)
-    Product update(@RequestBody Product product){
+    Product update(@RequestBody Product product) {
         return service.update(product);
     }
 
     @RequestMapping(path = "/{productId}", method = RequestMethod.DELETE)
-    void delete(@PathVariable Long productId){
+    void delete(@PathVariable Long productId) {
         service.delete(productId);
     }
 
