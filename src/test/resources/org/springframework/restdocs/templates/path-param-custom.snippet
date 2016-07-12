@@ -1,0 +1,22 @@
+A `{{method}}` request is used to perform this request :
+
+[source,http]
+----
+{{method}} {{path}}
+{{#headers}}
+{{name}}: {{value}}
+{{/headers}}
+{{requestBody}}
+----
+
+With parameters :
+
+|===
+|Parameter|Description
+
+{{#parameters}}
+|{{name}}
+|{{description}}
+
+{{/parameters}}
+|===

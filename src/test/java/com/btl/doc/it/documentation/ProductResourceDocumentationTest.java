@@ -2,44 +2,39 @@ package com.btl.doc.it.documentation;
 
 import com.btl.doc.it.DocumentationTest;
 import com.btl.doc.transport.ProductResource;
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.restdocs.PathParamSnippet;
 import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static com.btl.doc.it.DocumentationFields.*;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ProductResourceDocumentationTest extends DocumentationTest<ProductResource> {
 
     @Test
-    public void testFindWithFilters() throws Exception {
-//        String bearer = getJohnDoeBearer();
+    public void testFindAll() throws Exception {
 
-        this.mockMvc.perform(post(getUrlForResource() + "/find")
-                .content("{\"startDate\":\"2015-01-01\",\"endDate\":\"2099-01-01\",\"observationType\":\"OTHER\",\"cropId\":\"7\",\"userId\":\"3\",\"farmId\":\"3\", \"geometry\":\"{\\\"type\\\": \\\"Polygon\\\", \\\"coordinates\\\": [[ [41, 41], [41, 43], [43, 43], [43, 41], [41, 41]]]}\"}")
-                .header("Content-Type", "application/json"))
+        this.mockMvc.perform(get(getUrlForResource() + "/"))
                 .andExpect(status().isOk())
                 .andDo(
-                        document("observation-find",
+                        document("product-find",
                                 getDocRequestPreprocess(),
-                                requestFields(
-                                        fieldWithPath("geometry").description("Geometry which contains observation field").optional(),
-                                        fieldWithPath("startDate").description("Start date to filter over a period").optional(),
-                                        fieldWithPath("endDate").description("End date to filter over a period").optional(),
-                                        fieldWithPath("observationType").description("Observation type filtering").optional(),
-                                        fieldWithPath("cropId").description("Crop id for crop filter").optional(),
-                                        fieldWithPath("userId").description("User id for user filter").optional(),
-                                        fieldWithPath("farmId").description("Farm id for farm filter").optional()
-                                ),
-                                toResponseField(addFieldsInResources(getObservationFieldDescription(true), "_embedded.observationRepresentationList[]"))
+                                responseFields(Lists.newArrayList(
+                                        fieldWithPath("[].id").description("Product id"),
+                                        fieldWithPath("[].name").description("Product name"),
+                                        fieldWithPath("[].comment").description("Product comment"),
+                                        fieldWithPath("[].offers").description("Product offers"),
+                                        fieldWithPath("[].offers[].id").description("offer id"),
+                                        fieldWithPath("[].offers[].productId").description("Offer productId"),
+                                        fieldWithPath("[].offers[].price").description("Offer price"),
+                                        fieldWithPath("[].offers[].comment").description("Offer comment"),
+                                        fieldWithPath("[].offers[].name").description("Offer name")
+                                        )
+                                )
                         )
                 );
     }
@@ -47,18 +42,24 @@ public class ProductResourceDocumentationTest extends DocumentationTest<ProductR
     @Test
     public void testFindOne() throws Exception {
 
-        this.mockMvc.perform(get(getUrlForResource() + "/{observationId}", "1")
+        this.mockMvc.perform(get(getUrlForResource() + "/{productId}", "1")
                 .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
                 .andDo(
-                        document("observation-find-one",
+                        document("product-find-one",
                                 getDocRequestPreprocess(),
-                                toResponseField(getObservationFieldDescription(true)),
-                                PathParamSnippet.pathParamSnippet(RequestDocumentation.parameterWithName("observationId").description("Observation Id")),
-                                links(
-                                        linkWithRel("search").description("The link to search observations : <<observation-find>>"),
-                                        linkWithRel("types").description("The link to find observations types : <<observation-types>>"),
-                                        linkWithRel("self").description("The link to current observation : <<observation-get>>")
+                                PathParamSnippet.pathParamSnippet(RequestDocumentation.parameterWithName("productId").description("Product Id")),
+                                responseFields(Lists.newArrayList(
+                                        fieldWithPath("id").description("Product id"),
+                                        fieldWithPath("name").description("Product name"),
+                                        fieldWithPath("comment").description("Product comment"),
+                                        fieldWithPath("offers").description("Product offers"),
+                                        fieldWithPath("offers[].id").description("offer id"),
+                                        fieldWithPath("offers[].productId").description("Offer productId"),
+                                        fieldWithPath("offers[].price").description("Offer price"),
+                                        fieldWithPath("offers[].comment").description("Offer comment"),
+                                        fieldWithPath("offers[].name").description("Offer name")
+                                        )
                                 )
                         )
                 );
@@ -68,80 +69,55 @@ public class ProductResourceDocumentationTest extends DocumentationTest<ProductR
     public void testCreateUpdateDelete() throws Exception {
 
         MvcResult mvcResult = this.mockMvc.perform(post(getUrlForResource())
-                .content("{\"cropId\":\"7\",\"userId\":\"3\",\"observationType\":\"OTHER\",\"observationDate\":\"2016-01-01\",\"creationDate\":\"\",\"attributes\":{\"comment\":\"nomNom\"}}")
+                .content("{\"name\":\"testName\",\"comment\":\"product comment test\"}")
                 .header("Content-Type", "application/json"))
                 .andExpect(status().isCreated())
                 .andDo(
-                        document("observation-create",
+                        document("product-create",
                                 getDocRequestPreprocess(),
                                 requestFields(
-                                        fieldWithPath("cropId").description("Observation crop id").optional(),
-                                        fieldWithPath("userId").description("Observation user id").optional(),
-                                        fieldWithPath("observationType").description("Observation type").optional(),
-                                        fieldWithPath("observationDate").description("Observation date").optional(),
-                                        fieldWithPath("creationDate").description("Observation creation date (generated if not specified)").optional(),
-                                        fieldWithPath("attributes").description("Observation attributes").optional()
+                                        fieldWithPath("name").description("Product name").optional(),
+                                        fieldWithPath("comment").description("Product comment").optional()
                                 ),
-                                toResponseField(getObservationFieldDescription(true)),
-                                links(
-                                        linkWithRel("search").description("The link to search observations : <<observation-find>>"),
-                                        linkWithRel("types").description("The link to find observations types : <<observation-types>>"),
-                                        linkWithRel("self").description("The link to current observation : <<observation-get>>")
-                                )
+                                responseFields(Lists.newArrayList(
+                                        fieldWithPath("id").description("Product id"),
+                                        fieldWithPath("name").description("Product name"),
+                                        fieldWithPath("comment").description("Product comment")
+                                        ))
                         )
                 )
                 .andReturn();
 
-        String freshlyCreatedObservationId = getFirstIdAsStringFromBodyOrLocation(mvcResult);
+        String freshlyCreatedProductId = getFirstIdAsStringFromBodyOrLocation(mvcResult);
 
-        this.mockMvc.perform(put(getUrlForResource() + "/{observationId}", freshlyCreatedObservationId)
-                .content("{\"cropId\":\"7\",\"userId\":\"3\",\"observationType\":\"PESTS\",\"observationDate\":\"2016-01-01\",\"creationDate\":\"2016-02-02\",\"attributes\":{}}")
+        this.mockMvc.perform(put(getUrlForResource() + "/{productId}", freshlyCreatedProductId)
+                .content("{\"id\":\""+freshlyCreatedProductId+"\",\"name\":\"testName2\",\"comment\":\"product comment test2\"}")
                 .header("Content-Type", "application/json"))
                 .andExpect(status().isOk())
                 .andDo(
-                        document("observation-update",
+                        document("product-update",
                                 getDocRequestPreprocess(),
-                                toResponseField(getObservationFieldDescription(true)),
                                 requestFields(
-                                        fieldWithPath("cropId").description("Observation crop id").optional(),
-                                        fieldWithPath("userId").description("Observation user id").optional(),
-                                        fieldWithPath("observationType").description("Observation type").optional(),
-                                        fieldWithPath("observationDate").description("Observation date").optional(),
-                                        fieldWithPath("creationDate").description("Observation creation date (generated if not specified)").optional(),
-                                        fieldWithPath("attributes").description("Observation attributes").optional()
+                                        fieldWithPath("id").description("Product id").optional(),
+                                        fieldWithPath("name").description("Product name").optional(),
+                                        fieldWithPath("comment").description("Product comment").optional()
                                 ),
-                                PathParamSnippet.pathParamSnippet(RequestDocumentation.parameterWithName("observationId").description("Observation Id")),
-                                links(
-                                        linkWithRel("search").description("The link to search observations : <<observation-find>>"),
-                                        linkWithRel("types").description("The link to find observations types : <<observation-types>>"),
-                                        linkWithRel("self").description("The link to current observation : <<observation-get>>")
-                                )
+                                PathParamSnippet.pathParamSnippet(RequestDocumentation.parameterWithName("productId").description("Product Id")),
+                                responseFields(Lists.newArrayList(
+                                        fieldWithPath("id").description("Product id"),
+                                        fieldWithPath("name").description("Product name"),
+                                        fieldWithPath("comment").description("Product comment")
+                                ))
                         )
                 );
 
-//        this.mockMvc.perform(delete(getUrlForResource() + "/{observationId}", freshlyCreatedObservationId)
-//                .header(AUTHORIZATION_HEADER, bearer))
-//                .andExpect(status().isOk())
-//                .andDo(
-//                        document("observation-delete",
-//                                getDocRequestPreprocess(),
-//                                PathParamSnippet.pathParamSnippet(RequestDocumentation.parameterWithName("observationId").description("Observation Id"))
-//                        )
-//                );
-    }
-
-    @Test
-    public void testFindTypes() throws Exception {
-//        this.mockMvc.perform(get(getUrlForResource() + "/types")
-//                .header(AUTHORIZATION_HEADER, bearer)
-//                .accept(MediaTypes.HAL_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(
-//                        document("observation-types",
-//                                getDocRequestPreprocess(),
-//                                getDocResponsePreprocess(),
-//                                toResponseField(addFieldsInResources(getObservationAndInterventionTypeFieldDescription(), "_embedded.observationTypeList[]"))
-//                        )
-//                );
+        this.mockMvc.perform(delete(getUrlForResource() + "/{productId}", freshlyCreatedProductId))
+                .andExpect(status().isOk())
+                .andDo(
+                        document("product-delete",
+                                getDocRequestPreprocess(),
+                                PathParamSnippet.pathParamSnippet(RequestDocumentation.parameterWithName("productId").description("Product Id"))
+                        )
+                );
     }
 }

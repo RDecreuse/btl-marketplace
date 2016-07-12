@@ -1,4 +1,4 @@
-package org.springframework.restdocs;
+package com.btl.doc.it.documentation;
 
 import com.google.common.collect.Lists;
 import org.springframework.http.HttpHeaders;

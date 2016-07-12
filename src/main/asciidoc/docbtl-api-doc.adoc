@@ -75,18 +75,7 @@ use of HTTP status codes.
 
 === Application Error
 Whenever an error response (status code >= 400) is returned, the body will contain a JSON object
-that describes the problem. The error object has the following structure:
-
-include::{snippets}/error/response-fields.adoc[]
-
-=== Validation Error
-You may receive a validation error when you create a resource (for example with a mail too long when creating a new user). The response is :
-
-include::{snippets}/validation-error/http-response.adoc[]
-
-With fields :
-
-include::{snippets}/validation-error/response-fields.adoc[]
+that describes the problem.
 
 [[overview-hypermedia]]
 == Hypermedia
@@ -101,38 +90,48 @@ not create URIs themselves, instead they should use the above-described links to
 = Resources
 
 [[user]]
-== User
+== Product
 
-=== Accessing a user
+=== Accessing a product
 
-include::{snippets}/user-find-one/path-param-custom.adoc[]
+include::{snippets}/product-find-one/path-param-custom.adoc[]
 
-The response contains a user :
-include::{snippets}/user-find-one/response-fields.adoc[]
+The response contains a product :
+include::{snippets}/product-find-one/response-fields.adoc[]
 
-=== Accessing user list
+=== Accessing product list
 
-include::{snippets}/user-find/http-request.adoc[]
+include::{snippets}/product-find/http-request.adoc[]
 
 The response contains a user list :
 
-include::{snippets}/user-find/response-fields.adoc[]
+include::{snippets}/product-find/response-fields.adoc[]
 
-[[farm-create]]
+[[product-create]]
 === Create a user
 
-include::{snippets}/user-create/http-request.adoc[]
+include::{snippets}/product-create/http-request.adoc[]
 
 Request fields :
-include::{snippets}/user-create/request-fields.adoc[]
+include::{snippets}/product-create/request-fields.adoc[]
 
-The response http code must be 201 Created. (see <<overview-http-status-codes>>)
+The response contains a freshly created product :
+include::{snippets}/product-create/response-fields.adoc[]
 
-[[user-plugin]]
-=== Get user's plugins
+[[propduct-update]]
+=== Update a user
 
-include::{snippets}/user-plugins/http-request.adoc[]
+include::{snippets}/product-update/path-param-custom.adoc[]
 
-The response contains the list of plugins that the user is granted for:
+Request fields :
+include::{snippets}/product-update/request-fields.adoc[]
 
-include::{snippets}/user-plugins/response-fields.adoc[]
+The response contains the updated product :
+include::{snippets}/product-update/response-fields.adoc[]
+
+[[propduct-delete]]
+=== Delete a user
+
+include::{snippets}/product-delete/path-param-custom.adoc[]
+
+The response http code must be 200 OK. (see <<overview-http-status-codes>>)

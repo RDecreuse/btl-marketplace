@@ -4,6 +4,7 @@ import com.btl.doc.DocBtlApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,6 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.operation.OperationRequest;
-import org.springframework.restdocs.operation.OperationRequestFactory;
-import org.springframework.restdocs.operation.OperationRequestPartFactory;
 import org.springframework.restdocs.operation.OperationResponse;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
@@ -21,6 +20,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultHandler;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -28,8 +29,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,36 +51,18 @@ public abstract class DocumentationTest<T> {
     @Autowired
     private WebApplicationContext context;
 
-    protected static OperationPreprocessor simplifyFileUpload(final String partName, final String replacement) {
-        return new OperationPreprocessor() {
+    @Before
+    public void setUp() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+                .apply(documentationConfiguration(this.restDocumentation))
+                .alwaysDo(log())
+                .build();
+    }
 
-
-            @Override
-            public OperationRequest preprocess(final OperationRequest request) {
-                return new OperationRequestFactory().create(
-                        request.getUri(),
-                        request.getMethod(),
-                        request.getContent(),
-                        request.getHeaders(),
-                        request.getParameters(),
-                        request.getParts().stream().map(part -> {
-                            if (part.getName().equals(partName)) {
-                                return new OperationRequestPartFactory().create(
-                                        part.getName(),
-                                        part.getSubmittedFileName(),
-                                        replacement.getBytes(),
-                                        part.getHeaders()
-                                );
-                            } else {
-                                return part;
-                            }
-                        }).collect(Collectors.toList()));
-            }
-
-            @Override
-            public OperationResponse preprocess(final OperationResponse response) {
-                return null;
-            }
+    protected static ResultHandler log() {
+        return result -> {
+            LOGGER.debug(result.getResponse().getStatus() + "  - " + result.getResponse().getErrorMessage());
+            LOGGER.debug(result.getResponse().getContentAsString());
         };
     }
 
