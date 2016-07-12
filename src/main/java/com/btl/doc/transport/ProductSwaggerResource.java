@@ -2,7 +2,7 @@ package com.btl.doc.transport;
 
 import com.btl.doc.business.Product;
 import com.btl.doc.service.ProductService;
-import com.wordnik.swagger.annotations.*;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

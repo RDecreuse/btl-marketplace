@@ -10,8 +10,8 @@ public class DefaultViewConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
-        registry.addViewController("/swagger").setViewName("forward:/swagger/index.html");
-        registry.addViewController("/swagger/").setViewName("forward:/swagger/index.html");
+        registry.addViewController("/swagger/").setViewName("redirect:/swagger-ui.html");
+        registry.addViewController("/swagger").setViewName("redirect:/swagger-ui.html");
         registry.addViewController("/doc").setViewName("forward:/doc/index.html");
         registry.addViewController("/doc/").setViewName("forward:/doc/index.html");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
