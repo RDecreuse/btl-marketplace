@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @Api(value = "Resource for products", description = "Resource for managing products")
-@RequestMapping("/products-swagger")
+@RequestMapping("/api/products")
 public class ProductSwaggerResource {
 
     @Autowired
